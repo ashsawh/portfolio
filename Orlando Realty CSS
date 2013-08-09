@@ -1,0 +1,274 @@
+/*
+    Praimnauth Ram CSS
+*/
+
+/* ===== global styles ===== */
+
+body  {
+    font-family: "Trebuchet MS", sans-serif;
+    background: #000 url("../images/nostalgi.jpg");
+    margin: 0;  /* shorthand for all margins = 0 */
+    padding: 0;
+}
+
+p, h1, h2, h3, h4, h5, h6, li {
+    margin: 1ex 1em;
+}
+
+table {
+    margin: 0;
+    padding: 0;
+    border-spacing: 0;
+    text-align: left;
+}
+
+td, tr, div {
+    margin: 0;
+    padding: 0;
+    vertical-align: top;
+}
+
+/*=== Header ===*/
+
+div#sigHeader {
+  height: 110px;
+	width: 770px;
+	margin: 0 auto;
+	background: #fff;
+	margin-top: 30px;
+	border-bottom: none;
+}
+
+/*=== Logo ===*/
+
+img#logo {
+	margin: 25px 0 0 25px;
+}
+
+/*=== Header menu ===*/
+
+p#menu {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	margin: 0 0 0 375px;
+}
+
+a.headerLinks {
+	padding: 7px 10px;
+	text-decoration: none;
+	border-left: 1px dotted #000080;
+	color: #C0C0C0;
+
+}
+
+a#headerLinksFirst {
+	border: none;
+}
+
+a:hover.headerLinks {
+	color: #000; 
+}
+
+/*=== Content container ====*/
+
+div#allContent {
+	width: 770px;
+	margin: 0 auto;
+	background: url("../images/fauxBackground.jpg") repeat-y;
+	overflow: hidden;
+}
+
+div#floatClear {
+	clear: both;
+}
+
+/*===Main Content (Home) ===*/
+
+div#leftContent {
+	width: 552px;
+	min-height: 640px;
+	background: #fff;
+	float: left;
+}
+
+div#quoteHome {
+	background: #CCC url("../images/paraBar.jpg");
+	margin: 0;
+	padding: 0;
+}	
+
+div#leftContent h3 {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 1.2em;
+	color: #81A594;
+	margin-top: 20px;
+	width: 102px;
+	border-bottom: 1px dashed #81A594;
+}
+
+div#leftContent h5 {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 1.2em;
+	color: #81A594;
+	margin-top: 20px;
+	width: 165px;
+	border-bottom: 1px dashed #81A594;
+}
+
+div#leftContent h4 {
+	color: #81A594;
+}
+
+div#leftContent p {
+	font-size: .9em;	
+}
+
+p#expPar {
+	text-indent: 20px;
+	margin-top: 10px;
+}
+
+/*=== Main Content (Meet Ram) ===*/
+
+div#leftContent a {
+	text-decoration: none;
+	color: #000080;
+	font-size: 1.1em;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+
+div#leftContent a:hover {
+	color: #C0C0C0; 
+}
+
+p#contentLinks {
+	margin: 20px 0 20px 105px;
+}
+
+/*=== Main Content (Credentials) ===*/
+
+ul.ramInfo {
+	list-style-image: url("../images/bullet.jpg");
+}
+
+ul.ramInfo li {
+	margin-left: 20px;
+	color: #0099CC;
+	font-size: .9em;
+	font-family: Tahoma, Geneva, sans-serif;
+}
+
+/*=== Main Content (Testimonials) ===*/
+
+
+div#leftContent table {
+	font-size: .9em;
+	font-family: Tahoma, Geneva, sans-serif;
+}
+
+td.trans {
+	padding-left: 50px;
+	color: #0099CC;
+	text-align: right;
+}
+
+td.desc {
+	text-align: left;
+	color: #C0C0C0;
+	padding-left: 10px;	
+}
+
+td.desc img {
+	margin-left: -4px;
+}
+
+p.ownerQuote {
+	text-indent: 20px;
+	margin-top: 15px;
+	margin-left: 30px;
+	padding-bottom: 10px;
+	border-bottom: 1px solid #000;
+	width: 500px;
+}
+
+p#ownerQuote2 {
+	text-indent: 20px;
+	margin-top: 15px;
+	margin-left: 30px;
+	padding-bottom: 10px;
+	width: 500px;
+}
+
+/*=== Main Content (Expertise Info) ===*/
+
+p#expInfo {
+	color: #00;	
+	text-indent: 35px;
+	margin-top: 30px;
+	padding-top: 20px;
+	border-top: 4px double #999;
+}
+
+span.realEstate {
+	color: #00628B;
+}
+
+/*=== Side Content ===*/
+
+div#rightContent {
+	width: 218px;
+	!min-height: 600px;
+	background: #00F url("../images/rightContent.jpg");
+	float: left;
+	padding: 20px 0;
+}
+
+div#rightContent h3 {
+	color: #fff;
+	margin-top: 40px;
+	text-align: center;
+}
+
+div#rightContent p {
+	color: #dedbdb;
+	font-size: 12px;
+	font-family: Georgia, "Times New Roman", Times, serif;
+}
+
+p.sideBar {
+	padding: 3px 0;
+}
+
+a.sideLinks {
+	text-decoration: none;
+	color: #dedbdb;
+	font-size: 1.1em;
+	font-family: "Comic Sans MS", cursive;
+}
+
+div#rightContent span:hover {
+	border-bottom: 1px dashed #fff;
+}
+	
+
+/*=== Footer ===*/
+
+div#footer {
+	margin: 0 auto;
+	width: 552px;
+}
+
+
+div#footer p {
+	color: #81A594;
+	font-size: .9em;
+}
+
+
+div#footer a {
+	color: #FFF;
+	font-size: .9em;
+}
+
+div#footer span {
+	padding: 0 30px;
+}

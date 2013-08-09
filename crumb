@@ -1,0 +1,53 @@
+<?php
+
+
+// CRUMB defense system to secure AJAX outbound communication using a salt/
+
+
+class Crumb {
+  private $salt;
+	private $crumb;
+	private $timeFrame;
+	private $data;
+	private $crumbKey;
+	
+	// Assemble the crum using the static salt, dynamic data, and requested time frame.
+	public function generate_crumb($crumbKey, $actionID = "", $salt = "", $timeFrame = "") {
+		$this->generate_salt($salt);
+		$this->set_time_frame($timeFrame);
+		$this->crumbKey = $crumbKey;
+		$this->generate_data($actionID);
+		return $this->crumb = hash_hmac('gost', $this->data, $this->salt);	
+	}
+	
+	// Static salt
+	private function generate_salt($data = "") {
+		if(empty($data)) $data = SITENAME; 
+		return $this->salt = md5($data);
+	}
+	
+	// Generate the dynamic data based on userID, action type, and the time constraints
+	private function generate_data($actionID = "") {
+		global $session;
+		if(empty($actionID)) $actionID = 1;
+		return $this->data = ceil(time() / $this->timeFrame) . $this->crumbKey . $actionID;
+	}
+	
+	// Sets the time frame, default is 24 hours.
+	private function set_time_frame($timeFrame = "") {
+		empty($timeFrame) ? $this->timeFrame = 24 * 60 * 60 : $this->timeFrame = $timeFrame;	
+	}
+	
+	// Handshake. Ensures AJAX caller is from the website itself and not an external source.
+	public function handshake($crumb, $crumbKey, $actionID = "", $timeFrame = "", $salt = "") {
+		$this->generate_crumb($crumbKey, $actionID = "", $salt = "", $timeFrame = "");		
+		return $this->crumb == $crumb; 
+	}
+	
+	// Returns the currently assembled data crumb.
+	public function current_crumb() {
+		return $this->crumb;	
+	}
+	
+} 
+?>

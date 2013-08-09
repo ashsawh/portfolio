@@ -1,0 +1,98 @@
+<?php
+
+// Time manipuldation object, including a countdown
+
+class Time_Manipulation {
+  public $unixTime;
+	private $timeFormat;
+	private $defaultCalender;
+	
+	// Attribute $unitTime is private, thus needs a private function to set it.
+	public function set_unix_format_time($unixTime) {
+		$this->unixTime = $unixTime;	
+	}
+	
+	// Converts array filled by standard mktime inputs to unix seconds format. No input provided will default
+	// back to time();
+	public function time_to_unix($time = '') {
+		if(!empty($time)) {
+			$unixTime = strtotime($time);
+			$this->unixTime = $unixTime;
+		}
+		return $this->unixTime;
+	}
+	
+	// Sets the current time as the default time.
+	public function default_unix_time() {
+		$this->unixTime = time();
+		return $this->unixTime;	
+	}
+	
+	// If no timeformat is entered, function defaults to saved SQL format
+	public function format_time_for_sql($sqlFormat = '') {
+		$this->change_time_format($sqlFormat);
+		return date($this->timeFormat, $this->unixTime);
+	}
+	
+	// Function changes the default formatting used in object time formatting. Cases will be added as needed.
+	public function change_time_format($timeString) {
+		switch($timeString) {
+			case "sqlTimestamp": 
+				$this->timeFormat = "Y-m-d H:i:s";
+				break;
+			case "sqlDate":
+				$this->timeFormat = "Y-m-d";
+				break;  	
+			case "sqlTime":
+				$this->timeFormat = "H:i:s";
+				break; 
+			default:
+				$this->timeFormat = "Y-m-d H:i:s";
+		}	
+	}
+	
+	// Function returns the difference in seconds between two entered dates/timestrings. Note, they
+	// are converted to unix time.
+	public function time_difference($startTime, $endTime) {
+		$unixStart = $this->time_to_unix($startTime);
+		$unixEnd = $this->time_to_unix($endTime);
+		$diff = $this->unixTime = $unixEnd - $unixStart;
+		return $diff;	
+	}
+		
+	// Function takes in seconds and spits out formatted hourly conversion.
+	public function seconds_to_time($secs) {
+		$time['s'] = $secs%60;
+		$time['m'] = floor(($secs%3600)/60);
+		$time['h'] = floor(($secs%86400)/3600);
+		$time['d'] = floor(($secs%2592000)/86400);
+		$time['M'] = floor($secs/2592000);
+		
+		return "{$time['M']}m {$time['d']}d {$time['h']}h {$time['m']}m 
+					{$time['s']}";			
+	}
+	
+	// Function returns the amount of days in the currend calendor month.
+	public function days_in_month() {
+		$month = date("m", $this->unixTime);
+		$year = date("Y", $this->unixTime);
+		return cal_days_in_month(CAL_GREGORIAN, date("m"), date("Y"));	
+	}
+	
+	// Defaults time unixtime to current time and time format to SQL timestring datatype.	
+	function __construct() {
+		$this->unixTime = time();
+		$this->timeFormat = 'Y-m-d H:i:s';
+		$this->defaultCalender = "CAL_GREGORIAN";
+	}
+	
+	// When given a start and end time, object determines the % of time that has passed in between.
+	public function time_left_from_start($startTime, $endTime) {
+		$currentUnix = $this->default_unix_time();
+		$startUnix = $this->time_to_unix($startTime);
+		$endUnix = $this->time_to_unix($endTime);
+		return ($currentUnix - $startUnix) / ($endUnix - $startUnix);	
+	}
+	
+}
+?>

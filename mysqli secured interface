@@ -1,0 +1,79 @@
+
+
+// Create/Insert a new entry into database based on calling object values.
+  protected function secure_create() {
+		global $database; 
+		
+		if(property_exists($this, 'init_attrs')) { 
+			$attributes = $this->cleaned_attributes("1"); 
+		} else { $attributes = $this->cleaned_attributes(); }
+		
+		$markers = substr_replace(str_repeat("?,", sizeof($attributes)), "", -1); 
+
+		$sql = "INSERT INTO " .
+				static::$table_name . " (" .
+				join(", ", array_keys($attributes)) .
+				") VALUES (" .
+				$markers . ")";
+
+		$inputs = array_values($attributes);		
+		$stmt = $database->create_prepare($sql, $inputs);
+		$affectedRows = $database->prepare_affected_rows($stmt);
+		$database->prepare_close($stmt);
+		
+		if( $affectedRows > 0) {
+			$this->{static::$primary_key} = $database->insert_id();
+			return true;
+		} else {
+			return false;
+		}
+	}	
+  
+  
+  
+    // Update linked SQL table with data stored in object through saved primary key.
+	protected function secure_update($update_attrs ="") {
+		global $database;
+		$attributes = $this->cleaned_attributes($init = 0, $update_attrs);
+		$attr_pairs = array();
+		
+		foreach($attributes as $key => $value) {
+			$attr_pairs[] = "{$key} = ?";
+		}
+
+		$sql = "UPDATE " . static::$table_name .
+				" SET " . join(", ", $attr_pairs) .
+				" WHERE " . 
+				static::$primary_key . "=" . $database->escape_value($this->{static::$primary_key});
+		
+		$inputs = array_values($attributes);		
+		$stmt = $database->create_prepare($sql, $inputs);
+		$affectedRows = $database->prepare_affected_rows($stmt);
+		$database->prepare_close($stmt);
+
+		return $affectedRows > 0 ? true : false;
+	}
+  
+  // Find by specified prepare SQL and then create an object in which the SQL entry is loaded onto the object.
+	public static function secure_find_by_sql($sql = "", $inputs) {
+		global $database;
+		
+		$stmt = $database->create_prepare($sql, $inputs);
+		$result_set = $database->prepare_get_results($stmt);
+		
+		$object_array = array();
+		while($row = $database->fetch_array($result_set)) {
+			$object_array[] = static::instantiate($row);
+		}
+		
+		$database->prepare_close($stmt);
+		$database->free_result($result_set);
+		return $object_array;
+	}
+  
+  public function secure_save($update_attrs = "") {
+		return isset($this->{static::$primary_key}) ? $this->secure_update($update_attrs) : $this->secure_create();
+	}
+  
+  
+  

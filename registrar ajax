@@ -1,0 +1,30 @@
+// JavaScript Document
+// AJAX for Account Creation
+
+  // Is the name unique?
+	function is_name_avail(input) {
+		var message = sendPostToURL('username', input, 'AJAX/AJAX_username.php');
+		var div = document.getElementById('nameMsg');
+		
+		if(message == 1) {
+			div.innerHTML = '<span id="nameTaken">(Unavailable)</span>';
+		} else if(input.length == 0) {
+			div.innerHTML = "";
+		} else {
+			div.innerHTML = '<span id="nameAvail">(Available)</span>';
+		}
+		
+	}
+
+	// Does the password fit the criteria
+	function is_valid_pw(input) {
+		var div = document.getElementById('pwMsg');
+		if(input.length >= 6) {
+			div.innerHTML = "<span id='pwValid'>(Valid)</span>";
+		} else if(input.length == 0) {
+			div.innerHTML = "";
+		} else {
+			div.innerHTML = "<span id='pwInvalid'>(Invalid)</span>";
+		}
+	}
+	

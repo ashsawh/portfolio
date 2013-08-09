@@ -1,0 +1,47 @@
+// BCrypt with salt
+// Note: I have removed the salt creation from the code for security purpose
+
+
+<?php
+
+class Encrypt_PW {
+  private $algorithmPrefix; // Meant for storing prefix for bcrypt algorith recognition. Defaults to blowfish
+	private $salt; // Pre-assembled salt
+	
+
+	
+	// Assembles salt and recognition algorithm for storage in SQL database.
+	public function assemble_salt() {
+		if(empty($this->salt)) { $this->salt_for_bcrypt(); }
+		$prepared_salt = $this->algorithmPrefix . $this->salt . '$';
+		return $prepared_salt;
+	}
+	
+	// Encrypts password with an assembled salt and returns hashed value.
+	public function encrypt_with_salt($password) {
+		$prepared_salt = $this->assemble_salt();
+		return crypt($password, $prepared_salt);	
+	}
+	
+	// Changes randomly generated salt to one the user designates. Default is 22 characters long.
+	public function set_salt_for_assembly($salt) {
+		$this->salt = $salt;
+	}
+	
+	// Attempts to verify entered password against stored bcrypt hash and salts in SQL database
+	public function match_for_salt($password, $hash, $salt) {
+		return $hash === crypt($password, $salt) ? true : false;
+	}
+	
+	// Use to change private attribute. Used by bcrypt to recognize encryption algorithms.
+	public function change_sec_algo($prefix) {
+		$this->algorithmPrefix = $prefix;	
+	}
+	
+	function __construct() {
+		$this->algorithmPrefix = '$2a$10$';
+		$this->salt = $this->assemble_salt();
+	}
+}	
+
+?>

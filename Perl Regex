@@ -1,0 +1,16 @@
+// HTML VALIDATION REGEX PATTERNS
+define("USERNAME", "^[a-zA-Z][a-zA-Z0-9-_\.]{2,20}$");
+define("GWPASSWORD", "^.{6,20}$");
+define("PASSWORD", "(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$");
+define("ALPHA", "[a-zA-Z]+");
+define("NUMERIC", "[0-9]+");
+define("DECIMAL", "\-?\d+(\.\d{0,})?");
+define("ALPHASPECIAL", "[a-zA-Z\s-_\.]+");
+define("ALPHANUMERIC", "^[a-zA-Z0-9\s]{1,20}$");
+define("GANGNAME", "^[a-zA-Z0-9\s]{1,20}$");
+define("CHARNAME", "^[a-zA-Z0-9\s]{1,25}$");
+define("CHARSET", "-_@&:~,=+\*\"\.\?\!\$\\\/");
+define("EXCLUSION", "^'\(\)\^\>\<\[\]\{\}\|\$"); 
+define("TEXTBOX", "^[a-zA-Z0-9\s\r\n" . CHARSET . "]$");
+define("TEXTLINE", "^[a-zA-Z0-9\s" . CHARSET . "]$");
+define("EMAIL", "^[a-zA-Z0-9._%+-]+\@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$");

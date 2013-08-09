@@ -1,0 +1,51 @@
+// JavaScript Document
+// Timer countdown 
+
+
+timerDiv = document.getElementById('test');
+totalSeconds = 1000;
+
+function CreateTimer(timerID, time) {
+    totalSeconds = time;
+  timerDiv = document.getElementById(timerID);
+    
+    UpdateTimer()
+    window.setTimeout("Tick()", 1000);
+}
+
+function Tick() {
+    if (totalSeconds <= 0) {
+		timerDiv.innerHTML = "";
+    } else {
+		totalSeconds -= 1;
+		UpdateTimer()
+		window.setTimeout("Tick()", 1000);
+	}
+}
+
+function UpdateTimer() {
+    var Seconds = totalSeconds;
+    
+    var Days = Math.floor(Seconds / 86400);
+    Seconds -= Days * 86400;
+
+    var Hours = Math.floor(Seconds / 3600);
+    Seconds -= Hours * (3600);
+
+    var Minutes = Math.floor(Seconds / 60);
+    Seconds -= Minutes * (60);
+
+
+    var TimeStr = ((Days > 0) ? Days + "d " : "") + LeadingZero(Hours) + ":" + LeadingZero(Minutes) + ":" + LeadingZero(Seconds)
+
+
+    timerDiv.innerHTML = TimeStr;
+}
+
+
+function LeadingZero(Time) {
+
+    return (Time < 10) ? "0" + Time : + Time;
+
+}
+

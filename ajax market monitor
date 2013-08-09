@@ -1,0 +1,10 @@
+<?php header('Content-type: text/javascript'); ?>
+<?php
+  require_once('/gw/includes/market.php');
+	require_once('/gw/includes/rules.php');  
+?>
+
+var refreshTimer = setInterval(refresh_timer, <?=$market->get_refresh_rate()?>);
+var refreshTimerNews = setInterval(refresh_timer_news, <?=Rule::get_name_data('eventRefreshRate')?>);
+
+function refresh_timer(){load_div("marketRecap","../includes/marketRecap.php")}function refresh_timer_news(){load_div("eventsRecap","../includes/eventsRecap.php")}function load_div(a,b){var c=document.getElementById(a),d=new XMLHttpRequest;d.open("GET",b,!0),d.onreadystatechange=function(){4==this.readyState&&200==this.status&&(c.innerHTML=this.responseText)},d.send()}function test_onClick(a){load_div("drugChart","../includes/drugChart.php?id="+a)}function drug_select(a){var b=a.options[a.selectedIndex].value;load_div("drugChart","../includes/drugChart.php?id="+b)}function close_chart(){document.getElementById("drugChart").innerHTML=""}window.onload=function(){refresh_timer(),refresh_timer_news()};

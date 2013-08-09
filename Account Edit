@@ -1,0 +1,158 @@
+// PHP Validation for jQuery/HTML forms
+// The purpose of this code was to edit administrator account details for the custom coded CMS on the realty site.
+// PHP 5 / OOP
+
+
+<?php   require_once('initialize.php'); 
+		require_once('time.php');
+		require_once('encrypt.php');
+		require_once('accounts.php');
+		require_once('users.php');
+		require_once('unique_db_calls.php');
+		require_once('user_validation.php');
+?>
+
+<?php
+
+class Account_Validation extends User_Validation {
+	// Updates gang notice
+	public function do_update_account_details($user, $fields, $detailName) {
+		global $session;
+		// Available fields for error checking
+		$sizesRef = array("firstName" => 20, "lastName" => 20, "email" => 30);
+		$display = array("firstName" => "First Name", "lastName" => "Last Name", "email" => "E-mail"); 
+		$inputsRef = array("firstName" => 4, "lastName" => 4, "email" => 10);
+		
+		$details = array_keys($display);
+		$dispDetails = implode(', ', array_values($display)); // Error display
+		
+		if(!in_array($detailName, $details)) { 
+			$errors[] = "Changeable details are: " . $dispDetails;
+		} else {
+			// Size and empty error checking.
+			$size = array($detailName => $sizesRef[$detailName]);
+			$inputs_check = array($detailName => $inputsRef[$detailName]);
+
+			$results = $this->check_empty_size($fields, $size, array(), $display, $inputs_check);
+			// Aliasing		
+			$errors = $results[0]; 
+			$fieldUpdated = $results[1][$detailName];
+		}		
+				
+		if(empty($errors)) {
+			$user->$detailName = $fieldUpdated;
+			$user->secure_save($detailName);
+			$this->add_system_message("You have updated {$display[$detailName]} with {$fieldUpdated}.");
+		} else {
+			$this->list_all_errors($errors);
+		}
+	}
+	
+	// Function changes password, using an old password and confirmation
+	public function do_update_password($user, $fields, $sizes, $inputs_refs, $display, $gameDB) {
+		global $session;
+		// Generalized form checking
+		$inputs_check = array("confirmPW" => 5, "oldPW" => 5, "newPW" => 5);
+		$results = $this->check_empty_size($fields, $sizes, $inputs_refs, $display, $inputs_check);
+		// Aliasing
+		$errors = $results[0];
+		$confirmPW = $results[1]['confirmPW'];
+		$oldPW = $results[1]['oldPW'];
+		$newPW = $results[1]['newPW'];
+		$pwd_check = new Encrypt_PW;
+
+		// Confirmed and new password must match
+		if($confirmPW != $newPW) {
+			$errors[] = "The new password entered doesn't match your confirm password.";
+		} elseif(!$pwd_check->match_for_salt($oldPW, $user->password, $user->salt)) {
+		// Old password must match what's present in the database
+			$errors[] = "The password entered as your old password does not match what's stored in the database.";
+		} elseif(strlen($newPW) < 6) { 
+			$errors[] = "New password must be atleast 6 characters long.";
+		}
+		
+		// If validation passes, function changes the password to the new one specified
+		if(empty($errors)) {
+			$pwd_encrypt = new Encrypt_PW;
+			$salt = $pwd_encrypt->assemble_salt();
+			$encPwd = $pwd_encrypt->encrypt_with_salt($newPW);
+			$user->salt = $salt;
+			$user->password = $session->password = $_SESSION['password'] = $encPwd;
+			$user->save(array("salt", "password"));
+			$this->add_system_message("You have updated the password for your account.");
+			$resultCode = 0;
+		} else {
+			$this->list_all_errors($errors);
+			$resultCode = 1;	
+		}
+		return $resultCode; 
+	}
+	
+	// Function upgrades the user's account using credits.
+	public function do_upgrade_account($user, $level) {
+		global $session;
+		$accountType = array("Guest", "Trial", "Registered", "Founders");
+		// Cost can vary from level and isn't a patterned step, thus the cost must be calculated.
+		$costRef = array(0, 0, 20, 30);
+		$currAcctValue = $costRef[$user->type];
+		$newAcctValue = $costRef[$level];
+		$cost = abs($newAcctValue - $currAcctValue);
+		
+		
+		if($user->type > $level) {
+			$errors[] = "Your account is a higher class than the one selected.";
+		} elseif(!in_array($level, array_keys($accountType))) {
+			$errors[] = "You have selected an invalid account type to upgrade to.";
+		} elseif($cost > $user->credits) {
+			$errors[] = "You don't have enough credits to upgrade to {$accountType[$user->type]} accounts.";	
+		}
+		
+		// Subtract credits and add to account level on validation pass
+		if(empty($errors)) {
+			$turnReference = array(0, 3, 4, 5);
+			$user->turnsPerMin = $turnReference[$level];
+			$user->credits -= $cost;
+			$user->type = $level;
+			$user->save(array("credits", "type", "turnsPerMin"));
+			$this->add_system_message("You have updated your account to {$accountType[$user->type]} level.");
+		} else {
+			$this->list_all_errors($errors);	
+		}
+	}
+	
+	// Function codes gang, adding turns 
+	public function do_code_gang($user, $gameDB = 1) {
+		global $session;
+		$userID = $user->userID;
+		$codeMax = 1;
+		$account = Account::is_user_in_game($userID, $gameDB);
+		$codeCost = 10;
+		if($account != false) { $gang = Gangs::find_by_id($account->gangID); } else { $gang = false; }
+		
+		// Do you have a gang?
+		if(empty($account)) {
+			$errors[] = "You need to have a gang first before you can code it.";	
+		} 
+		
+		// You can't code more than the coding max
+		if($gang != false) {
+			if($gang->gangCoded > $codeMax) { 
+				$errors[] = "You have already maxed out gang coding on your account.";
+			}
+		} elseif($user->credits < $codeCost) $errors[] = "You don't have enough credits to code your gang.";
+		
+		// On validation pass, mark gang as coded.
+		if(empty($errors)) {
+			$gang->gangCoded++;
+			$gang->save("gangCoded");
+			$user->credits -= $codeCost;
+			$user->save("credits");
+			$this->add_system_message("You have successfully coded your gang.");
+		} else {
+			$this->list_all_errors($errors);	
+		}
+	}
+}
+$account_vdn = new Account_Validation;
+
+?>

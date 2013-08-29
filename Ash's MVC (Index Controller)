@@ -1,0 +1,21 @@
+<?php  
+	
+class Index_Controller extends Controller {
+	function __construct($registry) {
+		parent::__construct($registry);
+		$this->render('header');
+		$this->render('nav');
+		$this->switch_view_folder('index');
+		$this->render('login');
+		$this->switch_view_folder();
+		$this->render('footer');
+	}
+	
+	public function login() { 
+		if(!isset($this->models['Login_Model'])) die("Login model cannot be found.");
+		$this->models['Login_Model']->login();
+	}
+	
+}
+
+?>

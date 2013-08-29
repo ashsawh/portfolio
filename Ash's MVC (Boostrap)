@@ -1,0 +1,33 @@
+<?php require_once('autoloader.php'); ?>
+<?php
+
+class Bootstap {
+	private $registry; // Holds globals
+	private $router; // Router class that loads the views through the controllers into index.php
+	private $autoloader; // Autoloads classes without including them manually.
+	
+	function __construct() {
+		$this->autoloader = new Autoloader('lib'); // Create new autoload object and set default directory to lib.
+		$this->registry = $registry = new Registry; // Creates a new registry and then loads it up with site globals.
+		$ds = $registry->set_register('DS', '\\'); // Default divider
+		$siteDir = $registry->set_register('SITE_DIR', "lab"); // The site directory name.
+		// Default directory locations
+		$registry->set_register('SITE_NAME', "SEEMA'S LAB TOOLS");
+		$registry->set_register('SITE_ROOT', $ds . "wamp" . $ds . "www" . $ds . $siteDir);
+		$registry->set_register('CONTROLLERS', $ds . "wamp" . $ds . "www" . $ds . $siteDir . $ds . "controllers");
+		$registry->set_register('MODELS', $ds . "wamp" . $ds . "www" . $ds . $siteDir . $ds . "models");
+		$registry->set_register('VIEWS', $ds . "wamp" . $ds . "www" . $ds . $siteDir . $ds . "views");
+		// Database information
+		$registry->set_register('DB_NAME', "lab");
+		$registry->set_register('DB_SERVER', "localhost");
+		$registry->set_register('DB_USER', "root");
+		$registry->set_register('DB_PASS', "phi111");
+		$registry->set_register('CONTROLLERSNAME', "_controller");
+		//$registry->set_register('AUTOLOADER', $this->autoloader);				
+		//$registry->set_register('ROUTER', $this->router);				
+		$this->router = new Router($_GET, $this->registry, $this->autoloader); 
+		// Create the routing object that calls the correct controller which in turns loads the correct views.
+	}	
+}
+
+?>
